@@ -27,12 +27,12 @@ import sys
 
 # Default clinic information.
 # NOTE: DO NOT USE APOSTROPHES EVER BECAUSE eOSCAR SUCKS
-clinic_name = "Bay College Medical Centre"
-clinic_address = "C216-777 Bay St."
-clinic_city = "Toronto"
-clinic_postal = "McG 2C8"
-clinic_phone = "416-977-8877"
-clinic_fax ="416-977-0118"
+clinic_name = "Springfield General Hospital"
+clinic_address = "123 Oak St."
+clinic_city = "Springfield"
+clinic_postal = "M5V 1J2"
+clinic_phone = "636-765-4321"
+clinic_fax ="636-765-4322"
 
 # clinic array for multi-office set up
 # For Single Office, you can leave these fields alone.
@@ -45,12 +45,11 @@ clinic_fax ="416-977-0118"
 # NOTE:  10 CHARACTER LIMIT FOR myGroupName
 # NOTE:  20 CHARACTER LIMIT FOR messengerGroupAndTeamName
 clinic={}
-clinic['messengerGroupAndTeamName'] = ['']
-clinic['myGroupName'] = ['Doctors']
-clinic['address'] = ['']
-clinic['phone'] = ['']
-clinic['fax'] = ['']
-
+clinic['messengerGroupAndTeamName'] = ['Hibbert', 'Riviera']
+clinic['myGroupName'] = ['Hibbert', 'Riviera']
+clinic['address'] = ['1 Bow St.', '5 Bow St.']
+clinic['phone'] = ['636-098-7654', '636-123-0987']
+clinic['fax'] = ['636-098-7655', '636-123-0988']
 # NOTE: 40 CHARACTER LIMIT FOR ADDRESS IN PROVIDER RECORDS:
 # You can leave the address, phone number and fax number fields blank.
 #   If: blank then: use clinic value
@@ -62,27 +61,43 @@ clinic['fax'] = ['']
 # doctor user accounts
 # each array in doctor[] must be the same length
 doctor = {}
-doctor['clinic'] = ['1', '1', '1', '1']
-doctor['last_nm'] =  ['Wong', 'Lee', 'Wong', 'Siu']
-doctor['first_nm'] = ['Albert', 'Winnie', 'Angela', 'King Fun']
-doctor['login_nm'] = ['wongal', 'lee', 'wongan', 'siu']
-doctor['prov_no'] = ['106724', '000001', '000002', '000003']
-doctor['group_no'] = ['0000', '0000', '0000', '0000']
-doctor['cpso'] = ['60871', '68146', '69873', '74220']
-doctor['spec'] = ['00', '00', '00', '00']
-doctor['billcentre'] = ['N', 'N', 'N', 'N']
-doctor['address'] = ['', '', '', '']
-doctor['phone'] = ['', '', '', '']
-doctor['fax'] = ['', '', '', '']
+doctor['clinic'] = ['1', '2']
+doctor['last_nm'] =  ['Hibbert', 'Riviera']
+doctor['first_nm'] = ['Julius', 'Nick']
+doctor['login_nm'] = ['hibbert', 'riviera']
+doctor['prov_no'] = ['901206', '910110']
+doctor['group_no'] = ['0000', '0000']
+doctor['cpso'] = ['70606', '70610']
+doctor['spec'] = ['00', '00']
+doctor['billcentre'] = ['N', 'N']
+doctor['address'] = ['123 Oak St., Room 123, Springfield A1B 2C3', '']
+doctor['phone'] = ['636-123-4567', '']
+doctor['fax'] = ['636-123-4568', '']
 
 # staff user accounts
 # each array in staff[] must be the same length
 staff = {}
-staff['clinic'] =['1', '1']
-staff['last_nm'] =  ['Yau', 'Yau']
-staff['first_nm'] = ['Liza', 'Queenie']
-staff['login_nm'] = ['yaul', 'yauq']
+staff['clinic'] =['2', '1']
+staff['last_nm'] =  ['Haddad', 'Ruttan']
+staff['first_nm'] = ['Mike', 'Jennifer']
+staff['login_nm'] = ['haddad', 'ruttan']
 staff['prov_no'] = ['999901', '999902']
+
+# inactive doctor user accounts
+# each array in inactive_doctor[] must be the same length
+inactive_doctor = {}
+inactive_doctor['clinic'] = ['1', '1', '1', '1']
+inactive_doctor['last_nm'] =  ['Wong', 'Lee', 'Wong', 'Siu']
+inactive_doctor['first_nm'] = ['Albert', 'Winnie', 'Angela', 'King Fun']
+inactive_doctor['prov_no'] = ['909901', '909902', '909903', '909904']
+
+# inactive staff user accounts
+# each array in inactive_staff[] must be the same length
+inactive_staff = {}
+inactive_staff['clinic'] = ['1', '1']
+inactive_staff['last_nm'] =  ['Yau', 'Yau']
+inactive_staff['first_nm'] = ['Liza', 'Queenie']
+inactive_staff['prov_no'] = ['909905', '909906']
 
 
 ###################################################################################
@@ -317,7 +332,8 @@ while i < len(doctor['last_nm']):
     
         
     # generate calendar for scheduling.
-    scheduleInsert(doctor['prov_no'],2013)
+    scheduleInsert(doctor['prov_no'],2014)
+    scheduleInsert(doctor['prov_no'],2016)
     
     i += 1
                     
@@ -366,6 +382,62 @@ while i < len(staff['last_nm']):
     else:
         addressbookUsers.append(("<address desc=\""+staff['last_nm'][i]+","+staff['first_nm'][i]+"\" id=\""+staff['prov_no'][i]+"\"/>", ''))
 
+    i += 1
+
+print "###########################################################################"
+print "#     BEGIN PRINTING INACTIVE DOCTOR ACCOUNTS"
+print "###########################################################################"
+i=0
+while i < len(inactive_doctor['last_nm']):
+    
+    
+    inactive_doctor['clinic'][i] = int(inactive_doctor['clinic'][i])
+    
+    
+    # Add doctor account into provider table with values from doctor[][].
+    #   provider_no: provider number
+    #   last_name: lastname
+    #   first_name: firstname
+    #   ohip_no: doctor['prov_no'][i]
+    #   rma_no: doctor['prov_no'][i]
+    #   billing_no: doctor['prov_no'][i]
+    #   hso_no: doctor['prov_no'][i]
+    #   status: '0'
+    
+    print "###########################################################################"
+    print "#     Printing INACTIVE DOCTOR account for:"+inactive_doctor['first_nm'][i]+" "+inactive_doctor['last_nm'][i]
+    print "###########################################################################"
+    
+    print "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values ('"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['last_nm'][i]+"','"+inactive_doctor['first_nm'][i]+"','doctor','Doctors','','',null,'','','','','"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['prov_no'][i]+"','0','','','');"
+    
+    i += 1
+
+print "###########################################################################"
+print "#     BEGIN PRINTING INACTIVE STAFF ACCOUNTS"
+print "###########################################################################"
+i=0
+while i < len(inactive_doctor['last_nm']):
+    
+    
+    inactive_staff['clinic'][i] = int(inactive_staff['clinic'][i])
+    
+    
+    # Add doctor account into provider table with values from doctor[][].
+    #   provider_no: provider number
+    #   last_name: lastname
+    #   first_name: firstname
+    #   ohip_no: doctor['prov_no'][i]
+    #   rma_no: doctor['prov_no'][i]
+    #   billing_no: doctor['prov_no'][i]
+    #   hso_no: doctor['prov_no'][i]
+    #   status: '0'
+    
+    print "###########################################################################"
+    print "#     Printing INACTIVE STAFF account for:"+inactive_staff['first_nm'][i]+" "+inactive_staff['last_nm'][i]
+    print "###########################################################################"
+    
+    print "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values ('"+inactive_staff['prov_no'][i]+"','"+inactive_staff['last_nm'][i]+"','"+inactive_staff['first_nm'][i]+"','nurse','Doctors','','',null,'','','','','','','','','0','<xml_p_specialty_code></xml_p_specialty_code><xml_p_billinggroup_no></xml_p_billinggroup_no>','','');"
+    
     i += 1
 
 print "###########################################################################"
