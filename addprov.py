@@ -3,7 +3,7 @@
 # by Mike
 # based on code by David Daley
 #
-# Last updated: 2014-04-17
+# Last updated: 2014-06-08
 
 
 #!/usr/bin/python
@@ -22,7 +22,7 @@ import sys
 # D - Ottawa
 # R - Sudbury
 # U - Thunder Bay
-# N - Toronto      
+# N - Toronto
 
 
 # Default clinic information.
@@ -44,25 +44,27 @@ clinic_fax ="636-765-4322"
 # NOTE: DO NOT USE APOSTROPHES EVER BECAUSE OSCAR SUCKS
 # NOTE:  10 CHARACTER LIMIT FOR myGroupName
 # NOTE:  20 CHARACTER LIMIT FOR messengerGroupAndTeamName
+
 clinic={}
 clinic['messengerGroupAndTeamName'] = ['Hibbert', 'Riviera']
 clinic['myGroupName'] = ['Hibbert', 'Riviera']
 clinic['address'] = ['1 Bow St.', '5 Bow St.']
 clinic['phone'] = ['636-098-7654', '636-123-0987']
 clinic['fax'] = ['636-098-7655', '636-123-0988']
+
 # NOTE: 40 CHARACTER LIMIT FOR ADDRESS IN PROVIDER RECORDS:
 # You can leave the address, phone number and fax number fields blank.
 #   If: blank then: use clinic value
 #
-# NOTE: PLEASE PLEASE PLEASE BE SURE TO NUMBER CLINICS IN INCREASING ORDER.
-#   ALSO USE THE STRING VALUE FOR THE NUMBER.
+# NOTE: The clinics go up in order starting at position 1.
+#   Please use the string values for the numbers, ie '1', '2', etc.
 
 
 # doctor user accounts
 # each array in doctor[] must be the same length
 doctor = {}
 doctor['clinic'] = ['1', '2']
-doctor['last_nm'] =  ['Hibbert', 'Riviera']
+doctor['last_nm'] = ['Hibbert', 'Riviera']
 doctor['first_nm'] = ['Julius', 'Nick']
 doctor['login_nm'] = ['hibbert', 'riviera']
 doctor['prov_no'] = ['901206', '910110']
@@ -77,27 +79,29 @@ doctor['fax'] = ['636-123-4568', '']
 # staff user accounts
 # each array in staff[] must be the same length
 staff = {}
-staff['clinic'] =['2', '1']
-staff['last_nm'] =  ['Haddad', 'Ruttan']
-staff['first_nm'] = ['Mike', 'Jennifer']
-staff['login_nm'] = ['haddad', 'ruttan']
+staff['clinic'] =['1', '1']
+staff['last_nm'] =  ['Mathe', 'Carr']
+staff['first_nm'] = ['Trish', 'Lynne']
+staff['login_nm'] = ['mathet', 'carr']
 staff['prov_no'] = ['999901', '999902']
 
 # inactive doctor user accounts
 # each array in inactive_doctor[] must be the same length
+inactive_doctor_use = False
 inactive_doctor = {}
-inactive_doctor['clinic'] = ['1', '1', '1', '1']
-inactive_doctor['last_nm'] =  ['Wong', 'Lee', 'Wong', 'Siu']
-inactive_doctor['first_nm'] = ['Albert', 'Winnie', 'Angela', 'King Fun']
-inactive_doctor['prov_no'] = ['909901', '909902', '909903', '909904']
+inactive_doctor['clinic'] = ['']
+inactive_doctor['last_nm'] =  ['']
+inactive_doctor['first_nm'] = ['']
+inactive_doctor['prov_no'] = ['']
 
 # inactive staff user accounts
 # each array in inactive_staff[] must be the same length
+inactive_staff_use = False
 inactive_staff = {}
-inactive_staff['clinic'] = ['1', '1']
-inactive_staff['last_nm'] =  ['Yau', 'Yau']
-inactive_staff['first_nm'] = ['Liza', 'Queenie']
-inactive_staff['prov_no'] = ['909905', '909906']
+inactive_staff['clinic'] = ['']
+inactive_staff['last_nm'] =  ['']
+inactive_staff['first_nm'] = ['']
+inactive_staff['prov_no'] = ['']
 
 
 ###################################################################################
@@ -140,6 +144,12 @@ while i < len(doctor['address']):
     if len(doctor['address'][i]) > 40:
         raise NameError('@doctor[address] is too long. 40 Character Limit.')
     i += 1
+
+
+# check if the clinic array size is 1 and myGroupName is null
+if (len(clinic['myGroupName']) == 1) & (not clinic['myGroupName'][0]):
+    clinic['myGroupName'][0] = 'Doctors'
+    print clinic['myGroupName'][0]
 
 # Update external providers service types.
 
@@ -228,7 +238,7 @@ while i < len(doctor['last_nm']):
                 doctor['address'][i] = clinic['address'][doctor['clinic'][i]-1]
             else:
                 doctor['address'][i] = clinic_address+", "+clinic_city+" "+clinic_postal
-
+    
     # if the doctor's phone field is null
     # then: if the doctor has a clinic id, use the clinic's phone
     # else: use the default clinic phone
@@ -238,7 +248,7 @@ while i < len(doctor['last_nm']):
                 doctor['phone'][i] = clinic['phone'][doctor['clinic'][i]-1]
             else:
                 doctor['phone'][i] = clinic_phone
-
+    
     # if the doctor's fax field is null
     # then: if the doctor has a clinic id, use the clinic's fax
     # else: use the default clinic fax
@@ -248,7 +258,7 @@ while i < len(doctor['last_nm']):
                 doctor['fax'][i] = clinic['fax'][doctor['clinic'][i]-1]
             else:
                 doctor['fax'][i] = clinic_fax
-
+    
     # if the doctor has a clinic
     # then: assign the doctor to the clinic's team
     # else: make the clinic team null
@@ -256,8 +266,8 @@ while i < len(doctor['last_nm']):
         doctor_team = clinic['messengerGroupAndTeamName'][doctor['clinic'][i]-1]
     else:
         doctor_team = ''
-
-
+    
+    
     # Add doctor account into provider table with values from doctor[][].
     #   provider_no: provider number
     #   last_name: lastname
@@ -280,11 +290,11 @@ while i < len(doctor['last_nm']):
     ##      adds clinic fax, specialty code & group billing number.
     #   provider_activity: ''
     #   practictionerNo: doctor['cpso'][i]
-
+    
     print "###########################################################################"
     print "#     Printing DOCTOR account for:"+doctor['first_nm'][i]+" "+doctor['last_nm'][i]
     print "###########################################################################"
-
+    
     print "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values ('"+doctor['prov_no'][i]+"','"+doctor['last_nm'][i]+"','"+doctor['first_nm'][i]+"','doctor','Doctors','"+doctor_team+"','',null,'"+doctor['address'][i]+"','','"+doctor['phone'][i]+"','','"+doctor['prov_no'][i]+"','"+doctor['prov_no'][i]+"','"+doctor['prov_no'][i]+"','"+doctor['prov_no'][i]+"','1','<xml_p_fax>"+doctor['fax'][i]+"</xml_p_fax><xml_p_specialty_code>"+doctor['spec'][i]+"</xml_p_specialty_code><xml_p_billinggroup_no>"+doctor['group_no'][i]+"</xml_p_billinggroup_no>','','"+doctor['cpso'][i]+"');"
     
     # Add provider billing centre information.
@@ -294,33 +304,33 @@ while i < len(doctor['last_nm']):
     print "insert into mygroup(mygroup_no,provider_no,last_name,first_name,vieworder) values ('', '"+doctor['prov_no'][i]+"','"+doctor['last_nm'][i]+"','"+doctor['first_nm'][i]+"',NULL);"
     
     # Add clinic doctor group.
-    if not doctor['clinic'][i]:
+    if doctor['clinic'][i]:
         if clinic['myGroupName'][doctor['clinic'][i]-1]:
             print "insert into mygroup(mygroup_no,provider_no,last_name,first_name,vieworder) values ('"+clinic['myGroupName'][doctor['clinic'][i]-1]+"', '"+doctor['prov_no'][i]+"','"+doctor['last_nm'][i]+"','"+doctor['first_nm'][i]+"',NULL);"
-
+    
     # Add provider preferences.
     print "insert into ProviderPreference (providerNo,startHour,endHour,everyMin,myGroupNo,defaultServiceType,colourTemplate) values('"+doctor['prov_no'][i]+"','8','20','15','Doctors','MFP','deepblue');"
-        
+    
     # Add login username and password.
     print "insert into security (user_name,password,provider_no,pin,b_ExpireSet,date_ExpireDate,b_LocalLockSet,b_RemoteLockSet) values('"+doctor['login_nm'][i]+"','96-6838-103-11254-95-6856-9856126-59432-43-1197-9873','"+doctor['prov_no'][i]+"','1320','0',null,'1','1');"
-        
+    
     # Add admin roles: 'admin', 'doctor'.
     print "insert into secUserRole(provider_no, role_name, activeyn) values('"+doctor['prov_no'][i]+"', 'admin',1);"
     print "insert into secUserRole(provider_no, role_name, activeyn) values('"+doctor['prov_no'][i]+"', 'doctor',1);"
-        
+    
     # Add program_provider: something for accessing notes?
     # Add groupMembers_tbl: something something dark side.
     print "insert into program_provider (program_id,provider_no,role_id) Values('10016','"+doctor['prov_no'][i]+"',2);"
     print "insert into groupMembers_tbl (groupID,provider_No) values ('0','"+doctor['prov_no'][i]+"');"
-        
+    
     # Add property: use RX3.
     print "insert into property(name,value,provider_no) values ('rx_use_rx3','yes','"+doctor['prov_no'][i]+"');"
-        
+    
     
     # Add default doctor signature 'Dr. [first_name] [last_name].
     print "insert into providerExt(provider_no,signature) values ('"+doctor['prov_no'][i]+"','Dr. "+doctor['first_nm'][i]+" "+doctor['last_nm'][i]+"');"
     
-
+    
     #add user to address book for future sorting
     # if the doctor's fax field is null
     # then: if the doctor has a clinic id, use the clinic's fax
@@ -330,13 +340,12 @@ while i < len(doctor['last_nm']):
     else:
         addressbookUsers.append(("<address desc=\""+doctor['last_nm'][i]+","+doctor['first_nm'][i]+"\" id=\""+doctor['prov_no'][i]+"\"/>", ''))
     
-        
+    
     # generate calendar for scheduling.
-    scheduleInsert(doctor['prov_no'],2014)
-    scheduleInsert(doctor['prov_no'],2016)
+    scheduleInsert(doctor['prov_no'],2013)
     
     i += 1
-                    
+
 print "###########################################################################"
 print "#     BEGIN PRINTING STAFF ACCOUNTS"
 print "###########################################################################"
@@ -352,27 +361,27 @@ while i < len(staff['last_nm']):
     
     # Add nurse account into provider table with values from staff[][].
     print "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values ('"+staff['prov_no'][i]+"','"+staff['last_nm'][i]+"','"+staff['first_nm'][i]+"','nurse','Doctors','','',null,'','','','','','','','','1','<xml_p_specialty_code></xml_p_specialty_code><xml_p_billinggroup_no></xml_p_billinggroup_no>','','');"
-        
+    
     # Add provider preferences.
     print "insert into ProviderPreference (providerNo,startHour,endHour,everyMin,myGroupNo,defaultServiceType,colourTemplate) values('"+staff['prov_no'][i]+"','8','20','15','Doctors','MFP','deepblue');"
-        
+    
     # Add login username and password.
     print "insert into security (user_name,password,provider_no,pin,b_ExpireSet,date_ExpireDate,b_LocalLockSet,b_RemoteLockSet) values('"+staff['login_nm'][i]+"','96-6838-103-11254-95-6856-9856126-59432-43-1197-9873','"+staff['prov_no'][i]+"','1320','0',null,'1','1');"
-        
+    
     # Add admin roles: 'admin', 'nurse'.
     print "insert into secUserRole(provider_no, role_name, activeyn) values('"+staff['prov_no'][i]+"', 'admin',1);"
     print "insert into secUserRole(provider_no, role_name, activeyn) values('"+staff['prov_no'][i]+"', 'nurse',1);"
-        
+    
     # Add program_provider: something for accessing notes?
     # Add groupMembers_tbl: something something dark side.
     print "insert into program_provider (program_id,provider_no,role_id) Values('10016','"+staff['prov_no'][i]+"',2);"
     print "insert into groupMembers_tbl (groupID,provider_No) values ('0','"+staff['prov_no'][i]+"');"
-        
-
+    
+    
     print "insert into property(name,value,provider_no) values ('rx_use_rx3','yes','"+staff['prov_no'][i]+"');"
     
     print "insert into groupMembers_tbl(groupID,provider_no) values ('0','"+staff['prov_no'][i]+"');"
-
+    
     #add user to address book for future sorting
     # if the doctor's fax field is null
     # then: if the doctor has a clinic id, use the clinic's fax
@@ -381,62 +390,6 @@ while i < len(staff['last_nm']):
         addressbookUsers.append(("<address desc=\""+staff['last_nm'][i]+","+staff['first_nm'][i]+"\" id=\""+staff['prov_no'][i]+"\"/>",staff['clinic'][i]-1))
     else:
         addressbookUsers.append(("<address desc=\""+staff['last_nm'][i]+","+staff['first_nm'][i]+"\" id=\""+staff['prov_no'][i]+"\"/>", ''))
-
-    i += 1
-
-print "###########################################################################"
-print "#     BEGIN PRINTING INACTIVE DOCTOR ACCOUNTS"
-print "###########################################################################"
-i=0
-while i < len(inactive_doctor['last_nm']):
-    
-    
-    inactive_doctor['clinic'][i] = int(inactive_doctor['clinic'][i])
-    
-    
-    # Add doctor account into provider table with values from doctor[][].
-    #   provider_no: provider number
-    #   last_name: lastname
-    #   first_name: firstname
-    #   ohip_no: doctor['prov_no'][i]
-    #   rma_no: doctor['prov_no'][i]
-    #   billing_no: doctor['prov_no'][i]
-    #   hso_no: doctor['prov_no'][i]
-    #   status: '0'
-    
-    print "###########################################################################"
-    print "#     Printing INACTIVE DOCTOR account for:"+inactive_doctor['first_nm'][i]+" "+inactive_doctor['last_nm'][i]
-    print "###########################################################################"
-    
-    print "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values ('"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['last_nm'][i]+"','"+inactive_doctor['first_nm'][i]+"','doctor','Doctors','','',null,'','','','','"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['prov_no'][i]+"','0','','','');"
-    
-    i += 1
-
-print "###########################################################################"
-print "#     BEGIN PRINTING INACTIVE STAFF ACCOUNTS"
-print "###########################################################################"
-i=0
-while i < len(inactive_doctor['last_nm']):
-    
-    
-    inactive_staff['clinic'][i] = int(inactive_staff['clinic'][i])
-    
-    
-    # Add doctor account into provider table with values from doctor[][].
-    #   provider_no: provider number
-    #   last_name: lastname
-    #   first_name: firstname
-    #   ohip_no: doctor['prov_no'][i]
-    #   rma_no: doctor['prov_no'][i]
-    #   billing_no: doctor['prov_no'][i]
-    #   hso_no: doctor['prov_no'][i]
-    #   status: '0'
-    
-    print "###########################################################################"
-    print "#     Printing INACTIVE STAFF account for:"+inactive_staff['first_nm'][i]+" "+inactive_staff['last_nm'][i]
-    print "###########################################################################"
-    
-    print "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values ('"+inactive_staff['prov_no'][i]+"','"+inactive_staff['last_nm'][i]+"','"+inactive_staff['first_nm'][i]+"','nurse','Doctors','','',null,'','','','','','','','','0','<xml_p_specialty_code></xml_p_specialty_code><xml_p_billinggroup_no></xml_p_billinggroup_no>','','');"
     
     i += 1
 
@@ -484,3 +437,62 @@ while i < len(clinic['messengerGroupAndTeamName']):
 
 # update OSCAR Messenger Addressbook.
 print "update oscarcommlocations set addressbook='"+addressbookStart+"".join(addressbookFinal)+addressbookEnd+"'"
+
+if inactive_staff_use:
+    
+    print "###########################################################################"
+    print "#     BEGIN PRINTING INACTIVE DOCTOR ACCOUNTS"
+    print "###########################################################################"
+    i=0
+    while i < len(inactive_doctor['last_nm']):
+        
+        
+        inactive_doctor['clinic'][i] = int(inactive_doctor['clinic'][i])
+        
+        
+        # Add doctor account into provider table with values from doctor[][].
+        #   provider_no: provider number
+        #   last_name: lastname
+        #   first_name: firstname
+        #   ohip_no: doctor['prov_no'][i]
+        #   rma_no: doctor['prov_no'][i]
+        #   billing_no: doctor['prov_no'][i]
+        #   hso_no: doctor['prov_no'][i]
+        #   status: '0'
+        
+        print "###########################################################################"
+        print "#     Printing INACTIVE DOCTOR account for:"+inactive_doctor['first_nm'][i]+" "+inactive_doctor['last_nm'][i]
+        print "###########################################################################"
+        
+        print "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values ('"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['last_nm'][i]+"','"+inactive_doctor['first_nm'][i]+"','doctor','Doctors','','',null,'','','','','"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['prov_no'][i]+"','"+inactive_doctor['prov_no'][i]+"','0','','','');"
+        
+        i += 1
+
+if inactive_doctor_use:
+    print "###########################################################################"
+    print "#     BEGIN PRINTING INACTIVE STAFF ACCOUNTS"
+    print "###########################################################################"
+    i=0
+    while i < len(inactive_staff['last_nm']):
+        
+        
+        inactive_staff['clinic'][i] = int(inactive_staff['clinic'][i])
+        
+        
+        # Add doctor account into provider table with values from doctor[][].
+        #   provider_no: provider number
+        #   last_name: lastname
+        #   first_name: firstname
+        #   ohip_no: doctor['prov_no'][i]
+        #   rma_no: doctor['prov_no'][i]
+        #   billing_no: doctor['prov_no'][i]
+        #   hso_no: doctor['prov_no'][i]
+        #   status: '0'
+        
+        print "###########################################################################"
+        print "#     Printing INACTIVE STAFF account for:"+inactive_staff['first_nm'][i]+" "+inactive_staff['last_nm'][i]
+        print "###########################################################################"
+        
+        print "insert into provider (provider_no,last_name,first_name,provider_type,specialty,team,sex,dob,address,phone,work_phone,email,ohip_no,rma_no,billing_no,hso_no,status,comments,provider_activity,practitionerNo) values ('"+inactive_staff['prov_no'][i]+"','"+inactive_staff['last_nm'][i]+"','"+inactive_staff['first_nm'][i]+"','nurse','Doctors','','',null,'','','','','','','','','0','<xml_p_specialty_code></xml_p_specialty_code><xml_p_billinggroup_no></xml_p_billinggroup_no>','','');"
+        
+        i += 1
